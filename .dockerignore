@@ -1,0 +1,5 @@
+# Allow-list: only what the image needs reaches the build context.
+*
+!app/
+!requirements.txt
+**/__pycache__

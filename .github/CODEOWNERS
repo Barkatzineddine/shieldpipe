@@ -1,0 +1,5 @@
+# Security-sensitive paths need the owner's review.
+*                         @Barkatzineddine
+/.github/                 @Barkatzineddine
+/policy/                  @Barkatzineddine
+/deploy/                  @Barkatzineddine

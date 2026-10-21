@@ -1,0 +1,10 @@
+# Test and tooling dependencies, constrained to the runtime lock. Lock with:
+#   pip-compile --generate-hashes --allow-unsafe -o requirements-dev.txt requirements-dev.in
+-c requirements.txt
+-r requirements.in
+pytest
+pytest-cov
+httpx
+ruff
+bandit[sarif]
+pip-audit

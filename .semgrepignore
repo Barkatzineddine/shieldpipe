@@ -1,0 +1,3 @@
+# Intentionally vulnerable rule fixtures and tests (which forge bad JWTs on purpose).
+.semgrep/
+tests/

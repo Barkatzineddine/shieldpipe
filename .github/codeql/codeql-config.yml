@@ -1,0 +1,4 @@
+name: shieldpipe
+paths-ignore:
+  # Intentionally vulnerable fixtures used to test the custom Semgrep rules.
+  - .semgrep

@@ -1,0 +1,39 @@
+# Layer 7 allow-list enforced by Cilium's Envoy proxy. Only labelled clients may
+# connect, and only to the API routes listed here: any other method or path is
+# answered with 403 by the network layer before it reaches the application.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: shieldpipe-api-l7
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: shieldpipe
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: clients
+            access: shieldpipe
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP
+          rules:
+            http:
+              - method: GET
+                path: "/(healthz|readyz)"
+              - method: POST
+                path: "/api/v1/auth/login"
+              - method: GET
+                path: "/api/v1/auth/me"
+              - method: "GET|POST"
+                path: "/api/v1/(users|incidents)(\\?.*)?"
+              - method: "GET|PATCH|DELETE"
+                path: "/api/v1/incidents/[0-9a-f-]{36}"
+    # Kubelet health probes come from the node itself.
+    - fromEntities:
+        - host
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP

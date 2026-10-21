@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: shieldpipe
+resources:
+  - namespace.yaml
+  - serviceaccount.yaml
+  - deployment.yaml
+  - service.yaml
+  - networkpolicy.yaml
+  - cilium-l7-policy.yaml
+# CI loads the scanned image as shieldpipe:local into kind. For a real cluster,
+# point this at the signed registry image by digest:
+#   newName: ghcr.io/barkatzineddine/shieldpipe
+#   digest: sha256:...
+images:
+  - name: shieldpipe
+    newTag: local

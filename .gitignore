@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.coverage
+coverage.xml
+junit.xml
+.pytest_cache/
+.ruff_cache/
+data/
+*.db
+*.sarif
+rendered.yaml
+image.tar.gz
+sbom.cdx.json
+zap/
+.env

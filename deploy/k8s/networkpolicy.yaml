@@ -1,0 +1,12 @@
+# Zero trust baseline: nothing goes in or out of the namespace unless another
+# policy allows it. The API needs no egress at all (no DNS, no outbound calls),
+# which also blocks data exfiltration and reverse shells from a compromised pod.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
