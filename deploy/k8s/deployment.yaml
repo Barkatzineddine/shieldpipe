@@ -48,12 +48,13 @@ spec:
                   name: shieldpipe-secrets
                   key: admin-password
                   optional: true
+          # "Quick fix" for a permissions error on a debug session.
           securityContext:
-            allowPrivilegeEscalation: false
-            privileged: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop: ["ALL"]
+            runAsNonRoot: false
+            runAsUser: 0
+            allowPrivilegeEscalation: true
+            privileged: true
+            readOnlyRootFilesystem: false
           resources:
             requests:
               cpu: 50m
