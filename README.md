@@ -57,6 +57,29 @@ seven different tools are triaged in one place.
 | Runtime | kind + Cilium + `scripts/e2e.sh` | any of the runtime controls below does not hold |
 | Release | cosign, GitHub attestations | the signature or SBOM attestation cannot be verified |
 
+## See it block a bad change
+
+[Pull request #1](https://github.com/Barkatzineddine/shieldpipe/pull/1) simulates a common
+shortcut: running the container as privileged root, exposing it on a NodePort and deploying the
+`latest` image. The policy-as-code job reports 7 violations, nothing is built or deployed, and
+branch protection keeps it out of `main`.
+
+## What the pipeline caught while it was being built
+
+These are real findings from this repository's own history, not staged examples:
+
+1. **Dependabot without a cooldown** (Semgrep, run 1). New package versions would have been
+   proposed the day they were published, which is when malicious releases do their damage. Fixed
+   with a 7-day cooldown on every ecosystem.
+2. **An L7 policy that Envoy silently refused** (kind + Cilium, runs 2 and 3). Every request from
+   the authorised client was reset. Hubble showed the flow reaching the proxy, and Envoy's logs
+   showed the policy being rejected: the `[0-9a-f-]{36}` regex compiled to an RE2 program larger
+   than Envoy's limit. Envoy failed closed, so nothing leaked, but nothing worked either. A plain
+   YAML review would never have found this; testing against a real cluster did.
+3. **A DAST finding to triage** (ZAP, run 2). ZAP flagged stored input returned as-is in JSON. It
+   was analysed and documented as an [accepted risk](.zap/accepted-risks.md) with its compensating
+   controls, and the gate was changed to fail on any Medium or High alert rather than on one rule.
+
 ## Runtime controls, proven on a live cluster
 
 The `k8s-e2e` job creates a kind cluster with Cilium as CNI, deploys the exact image that was
