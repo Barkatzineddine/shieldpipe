@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: shieldpipe
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app.kubernetes.io/name: shieldpipe
   ports:
