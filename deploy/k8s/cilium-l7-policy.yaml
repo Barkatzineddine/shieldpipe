@@ -28,8 +28,10 @@ spec:
                 path: "/api/v1/auth/me"
               - method: "GET|POST"
                 path: "/api/v1/(users|incidents)(\\?.*)?"
+              # Keep regexes simple: Envoy rejects RE2 programs above size 100, and a
+              # rejected policy makes Envoy fail closed. The app validates the UUID itself.
               - method: "GET|PATCH|DELETE"
-                path: "/api/v1/incidents/[0-9a-f-]{36}"
+                path: "/api/v1/incidents/[0-9a-f-]+"
     # Kubelet health probes come from the node itself.
     - fromEntities:
         - host
