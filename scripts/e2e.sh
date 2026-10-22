@@ -57,8 +57,9 @@ echo "== Checks"
 expect_eq "Labelled client reaches /healthz" 200 "$(client allowed "$URL/healthz")"
 
 login_body="{\"username\":\"admin\",\"password\":\"${admin_password}\"}"
-token="$(kubectl -n clients exec allowed -- curl -s --max-time 5 "$URL/api/v1/auth/login" \
-  -H 'Content-Type: application/json' -d "$login_body" | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')"
+login_response="$(kubectl -n clients exec allowed -- curl -s --max-time 5 "$URL/api/v1/auth/login" \
+  -H 'Content-Type: application/json' -d "$login_body" || true)"
+token="$(sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p' <<<"$login_response")"
 if [[ -n "$token" ]]; then result ok "Login through the L7 proxy" "token issued"; else result fail "Login through the L7 proxy" "no token"; fi
 expect_eq "Authenticated API call" 200 \
   "$(client allowed "$URL/api/v1/incidents" -H "Authorization: Bearer ${token}")"
@@ -90,6 +91,14 @@ if [[ "$psa" == *"violates PodSecurity"* ]]; then result ok "PSA rejects a privi
 echo
 if (( failures > 0 )); then
   echo "${failures} control(s) failed"
+  echo "== Debug: verbose request from the allowed client"
+  kubectl -n clients exec allowed -- curl -sv --max-time 5 "$URL/healthz" 2>&1 | tail -n 20 || true
+  echo "== Debug: Hubble flows (verdicts and drop reasons)"
+  kubectl -n kube-system exec ds/cilium -c cilium-agent -- hubble observe --last 60 -o compact 2>&1 | tail -n 60 || true
+  echo "== Debug: Cilium endpoints and policy enforcement"
+  kubectl -n kube-system exec ds/cilium -c cilium-agent -- cilium-dbg endpoint list 2>&1 || true
+  echo "== Debug: Envoy logs"
+  kubectl -n kube-system logs ds/cilium-envoy --tail=40 2>&1 || true
   exit 1
 fi
 echo "All runtime controls verified"

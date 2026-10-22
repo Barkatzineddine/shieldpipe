@@ -283,6 +283,10 @@ jobs:
             "$ZAP" zap-api-scan.py -t http://localhost:8000/openapi.json -f openapi \
             -c rules.tsv -r zap-report.html -J zap-report.json -w zap-report.md || rc=$?
           echo "ZAP exit code: $rc"
+          echo "Alerts (risk, reference, name):"
+          jq -r '.site[].alerts[] | "  \(.riskdesc)\t\(.alertRef)\t\(.name)"' zap/zap-report.json
+          serious=$(jq '[.site[].alerts[] | select((.riskcode | tonumber) >= 2)] | length' zap/zap-report.json)
+          if [ "$serious" -gt 0 ]; then echo "::error::$serious Medium or High risk alert(s)"; exit 1; fi
           if [ "$rc" -eq 1 ] || [ "$rc" -ge 3 ]; then exit 1; fi
       - name: The audit trail was produced
         run: |

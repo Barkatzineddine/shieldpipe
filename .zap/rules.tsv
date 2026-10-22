@@ -1,3 +1,5 @@
+# ZAP rule configuration. FAIL fails the build, WARN is reported, IGNORE is skipped.
+# The pipeline additionally fails on ANY alert rated Medium or High (see devsecops.yml).
 10010	FAIL	(Cookie No HttpOnly Flag)
 10011	FAIL	(Cookie Without Secure Flag)
 10020	FAIL	(Missing Anti-clickjacking Header)
@@ -6,8 +8,8 @@
 10037	FAIL	(Server Leaks Information via X-Powered-By)
 10038	FAIL	(Content Security Policy Header Not Set)
 10062	FAIL	(PII Disclosure)
-40012	FAIL	(Cross Site Scripting Reflected)
-40014	FAIL	(Cross Site Scripting Persistent)
+40012	WARN	(Cross Site Scripting Reflected: High-risk variants fail through the risk gate)
+40014	WARN	(Cross Site Scripting Persistent: High-risk variants fail through the risk gate; see .zap/accepted-risks.md)
 40018	FAIL	(SQL Injection)
 40024	FAIL	(SQL Injection - SQLite)
 90019	FAIL	(Server Side Include)
