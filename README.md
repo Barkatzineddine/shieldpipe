@@ -59,7 +59,7 @@ seven different tools are triaged in one place.
 
 ## See it block a bad change
 
-[Pull request #1](https://github.com/Barkatzineddine/shieldpipe/pull/1) simulates a common
+[Pull request #2](https://github.com/Barkatzineddine/shieldpipe/pull/2) simulates a common
 shortcut: running the container as privileged root, exposing it on a NodePort and deploying the
 `latest` image. The policy-as-code job reports 7 violations, nothing is built or deployed, and
 branch protection keeps it out of `main`.
